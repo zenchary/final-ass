@@ -38,7 +38,7 @@
         }
         
         .dashboard-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: -50px auto 0;
             padding: 0 20px 50px;
         }
@@ -84,6 +84,16 @@
         
         .stat-icon.users {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .stat-icon.employees {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .stat-icon.accounts {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
             color: white;
         }
         
@@ -149,6 +159,11 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
+
+        .action-card.users .action-icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
         
         .action-title {
             font-size: 1.5rem;
@@ -204,7 +219,7 @@
                         <i class="fas fa-user-tie"></i> Employee Dashboard
                         <span th:if="${isAdmin}" class="admin-badge">👑 Admin</span>
                     </h1>
-                    <p class="dashboard-subtitle">Quản lý đơn hàng và sản phẩm</p>
+                    <p class="dashboard-subtitle">Quản lý đơn hàng, sản phẩm và người dùng</p>
                 </div>
                 <div>
                     <a href="/home" class="btn btn-light me-2">
@@ -225,7 +240,7 @@
     <div class="dashboard-container">
         <!-- Statistics Cards -->
         <div class="row stats-row">
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon orders">
                         <i class="fas fa-shopping-cart"></i>
@@ -235,7 +250,7 @@
                 </div>
             </div>
             
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon products">
                         <i class="fas fa-box"></i>
@@ -245,7 +260,7 @@
                 </div>
             </div>
             
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon users">
                         <i class="fas fa-users"></i>
@@ -254,8 +269,28 @@
                     <p class="stat-value" th:text="${totalUsers != null ? totalUsers : '0'}">0</p>
                 </div>
             </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon employees">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h6 class="stat-title">Nhân viên</h6>
+                    <p class="stat-value" th:text="${totalEmployees != null ? totalEmployees : '0'}">0</p>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon accounts">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h6 class="stat-title">Tổng tài khoản</h6>
+                    <p class="stat-value" th:text="${totalAccounts != null ? totalAccounts : '0'}">0</p>
+                </div>
+            </div>
             
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon revenue">
                         <i class="fas fa-dollar-sign"></i>
@@ -273,7 +308,7 @@
             </h3>
             
             <div class="row">
-                <div class="col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <a href="/employee/orders" class="action-card orders">
                         <div class="action-icon">
                             <i class="fas fa-clipboard-list"></i>
@@ -284,15 +319,15 @@
                         </p>
                     </a>
                 </div>
-                
-                <div class="col-md-6 mb-4">
-                    <a href="/employee/products" class="action-card products">
+
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <a href="/employee/users" class="action-card users">
                         <div class="action-icon">
-                            <i class="fas fa-box-open"></i>
+                            <i class="fas fa-users-cog"></i>
                         </div>
-                        <h4 class="action-title">Xem sản phẩm</h4>
+                        <h4 class="action-title">Quản lý Người dùng</h4>
                         <p class="action-description">
-                            Xem danh sách và thông tin chi tiết sản phẩm
+                            Xem và quản lý thông tin người dùng
                         </p>
                     </a>
                 </div>
@@ -306,31 +341,31 @@
             </h3>
             
             <div class="row">
-                <div class="col-md-2 mb-3">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                     <div class="stat-card text-center" style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);">
                         <h6 class="stat-title">Chờ xử lý</h6>
                         <p class="stat-value" style="color: #d63031;" th:text="${pendingOrders}">0</p>
                     </div>
                 </div>
-                <div class="col-md-2 mb-3">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                     <div class="stat-card text-center" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);">
                         <h6 class="stat-title" style="color: white;">Đang xử lý</h6>
                         <p class="stat-value" style="color: white;" th:text="${processingOrders}">0</p>
                     </div>
                 </div>
-                <div class="col-md-2 mb-3">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                     <div class="stat-card text-center" style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);">
                         <h6 class="stat-title" style="color: white;">Đang giao</h6>
                         <p class="stat-value" style="color: white;" th:text="${shippedOrders}">0</p>
                     </div>
                 </div>
-                <div class="col-md-2 mb-3">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                     <div class="stat-card text-center" style="background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);">
                         <h6 class="stat-title" style="color: white;">Đã giao</h6>
                         <p class="stat-value" style="color: white;" th:text="${deliveredOrders}">0</p>
                     </div>
                 </div>
-                <div class="col-md-2 mb-3">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                     <div class="stat-card text-center" style="background: linear-gradient(135deg, #fab1a0 0%, #ff7675 100%);">
                         <h6 class="stat-title" style="color: white;">Đã hủy</h6>
                         <p class="stat-value" style="color: white;" th:text="${cancelledOrders}">0</p>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Người dùng - Poly Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.3);
+            color: white;
+        }
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-cancel:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+        .required {
+            color: #dc3545;
+        }
+        .input-group-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px 0 0 10px;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1><i class="fas fa-user-plus"></i> Thêm Người dùng Mới</h1>
+            <p class="mb-0">Tạo tài khoản người dùng mới trong hệ thống</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${message}" 
+             th:class="'alert alert-custom alert-' + ${messageType == 'error' ? 'danger' : 'success'} + ' alert-dismissible fade show'" 
+             role="alert">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Form -->
+        <div class="form-card">
+            <form th:action="@{/admin/users/save}" method="post" th:object="${user}">
+                <div class="row">
+                    <!-- Username -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Tên đăng nhập <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-at"></i></span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   th:field="*{username}"
+                                   placeholder="Nhập tên đăng nhập"
+                                   required>
+                        </div>
+                        <small class="text-muted">Tên đăng nhập phải là duy nhất</small>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Mật khẩu <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" 
+                                   class="form-control" 
+                                   name="password"
+                                   placeholder="Nhập mật khẩu"
+                                   required
+                                   minlength="6">
+                        </div>
+                        <small class="text-muted">Mật khẩu tối thiểu 6 ký tự</small>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-envelope"></i> Email <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" 
+                                   class="form-control" 
+                                   th:field="*{email}"
+                                   placeholder="example@email.com"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-id-card"></i> Họ và tên <span class="required">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   th:field="*{fullName}"
+                                   placeholder="Nhập họ và tên đầy đủ"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-phone"></i> Số điện thoại
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-mobile-alt"></i></span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   th:field="*{phone}"
+                                   placeholder="Nhập số điện thoại"
+                                   pattern="[0-9]{10,11}">
+                        </div>
+                        <small class="text-muted">10-11 chữ số</small>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Địa chỉ
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   th:field="*{address}"
+                                   placeholder="Nhập địa chỉ">
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-12 mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   th:field="*{active}"
+                                   id="activeSwitch"
+                                   checked>
+                            <label class="form-check-label" for="activeSwitch">
+                                <i class="fas fa-toggle-on"></i> Kích hoạt tài khoản
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <a href="/admin/users" class="btn-cancel">
+                        <i class="fas fa-times"></i> Hủy bỏ
+                    </a>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> Lưu người dùng
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Info Card -->
+        <div class="card mt-3" style="border-radius: 15px; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            <div class="card-body">
+                <h6 class="card-title"><i class="fas fa-info-circle text-info"></i> Lưu ý:</h6>
+                <ul class="mb-0">
+                    <li>Các trường có dấu <span class="required">*</span> là bắt buộc</li>
+                    <li>Tên đăng nhập và email phải là duy nhất trong hệ thống</li>
+                    <li>Mật khẩu sẽ được mã hóa tự động khi lưu</li>
+                    <li>Người dùng mới sẽ được gán role "USER" mặc định</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

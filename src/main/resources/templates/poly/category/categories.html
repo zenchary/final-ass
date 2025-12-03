@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Loại sản phẩm - Poly Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67,233,123,0.3);
+            color: white;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin: 0 0.2rem;
+        }
+        .btn-edit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .btn-delete {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+        }
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .category-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .product-count {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-layer-group"></i> Quản lý Loại sản phẩm</h1>
+                    <p class="mb-0">Quản lý các loại sản phẩm trong hệ thống</p>
+                </div>
+                <div>
+                    <a href="/admin/dashboard" class="btn btn-light me-2">
+                        <i class="fas fa-arrow-left"></i> Về Dashboard
+                    </a>
+                    <a href="/admin/categories/add" class="btn-add">
+                        <i class="fas fa-plus"></i> Thêm loại mới
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${message}" 
+             th:class="'alert alert-custom alert-' + ${messageType == 'error' ? 'danger' : 'success'} + ' alert-dismissible fade show'" 
+             role="alert">
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <form method="get" th:action="@{/admin/categories}" class="row g-3">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" 
+                               class="form-control" 
+                               name="search" 
+                               th:value="${search}"
+                               placeholder="Tìm kiếm theo tên hoặc mô tả...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                    <a href="/admin/categories" class="btn btn-outline-secondary w-100 mt-2">
+                        <i class="fas fa-redo"></i> Đặt lại
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Category List -->
+        <div class="category-card">
+            <h4 class="mb-4">
+                <i class="fas fa-list"></i> Danh sách loại sản phẩm
+                <span class="badge bg-primary ms-2" th:text="${categories.size()}">0</span>
+            </h4>
+
+            <div th:if="${categories.isEmpty()}" class="text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Chưa có loại sản phẩm nào trong hệ thống</p>
+                <a href="/admin/categories/add" class="btn-add">
+                    <i class="fas fa-plus"></i> Thêm loại đầu tiên
+                </a>
+            </div>
+
+            <div th:if="${!categories.isEmpty()}" class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>Tên loại</th>
+                            <th>Mô tả</th>
+                            <th style="width: 150px;">Số sản phẩm</th>
+                            <th style="width: 180px;">Ngày tạo</th>
+                            <th class="text-center" style="width: 150px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cat : ${categories}">
+                            <td>
+                                <span class="category-badge" th:text="${cat.categoryId}">1</span>
+                            </td>
+                            <td>
+                                <strong th:text="${cat.name}">Tên loại</strong>
+                            </td>
+                            <td>
+                                <span th:text="${cat.description ?: 'Chưa có mô tả'}">Mô tả</span>
+                            </td>
+                            <td>
+                                <span class="product-count">
+                                    <i class="fas fa-box"></i>
+                                    <span th:text="${cat.products != null ? cat.products.size() : 0}">0</span>
+                                    sản phẩm
+                                </span>
+                            </td>
+                            <td>
+                                <i class="fas fa-calendar text-muted"></i>
+                                <span th:text="${#temporals.format(cat.createdAt, 'dd/MM/yyyy')}">01/01/2024</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/categories/edit/{id}(id=${cat.categoryId})}" 
+                                   class="action-btn btn-edit" 
+                                   title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <form th:action="@{/admin/categories/delete/{id}(id=${cat.categoryId})}" 
+                                      method="post" 
+                                      style="display:inline;"
+                                      th:attr="onsubmit='return confirm(\'Bạn có chắc muốn xóa loại này?\n\nLưu ý: Chỉ có thể xóa loại không có sản phẩm nào!\');'">
+                                    <button type="submit" 
+                                            class="action-btn btn-delete" 
+                                            title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-layer-group fa-3x text-primary mb-3"></i>
+                        <h3 th:text="${categories.size()}">0</h3>
+                        <p class="text-muted mb-0">Tổng số loại</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-box fa-3x text-success mb-3"></i>
+                        <h3 th:text="${categories.stream().mapToInt(c -> c.products != null ? c.products.size() : 0).sum()}">0</h3>
+                        <p class="text-muted mb-0">Tổng sản phẩm</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
+                        <h3 th:text="${categories.stream().filter(c -> c.products != null && !c.products.isEmpty()).count()}">0</h3>
+                        <p class="text-muted mb-0">Loại có sản phẩm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

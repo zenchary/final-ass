@@ -38,7 +38,7 @@
         }
         
         .dashboard-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: -50px auto 0;
             padding: 0 20px 50px;
         }
@@ -71,26 +71,17 @@
             font-size: 2rem;
             margin-bottom: 1rem;
         }
+
+        /* Định nghĩa màu sắc cho các icon */
+        .stat-icon.orders, .action-card.orders .action-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .stat-icon.products, .action-card.products .action-icon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .stat-icon.users, .action-card.users .action-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .stat-icon.employees, .action-card.employees .action-icon { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .stat-icon.revenue { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .action-card.promotions .action-icon { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: white; }
         
-        .stat-icon.orders {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .stat-icon.products {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        
-        .stat-icon.users {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-        
-        .stat-icon.revenue {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-        }
+        /* Thêm màu cho Categories */
+        .action-card.categories .action-icon { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); color: white; }
         
         .stat-title {
             color: #666;
@@ -140,26 +131,6 @@
             margin: 0 auto 1.5rem;
         }
         
-        .action-card.orders .action-icon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .action-card.products .action-icon {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-        
-        .action-card.promotions .action-icon {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
-        }
-
-        .action-card.employees .action-icon {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-        
         .action-title {
             font-size: 1.5rem;
             font-weight: bold;
@@ -195,7 +166,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="dashboard-header">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
@@ -217,11 +187,9 @@
         </div>
     </div>
     
-    <!-- Main Content -->
     <div class="dashboard-container">
-        <!-- Statistics Cards -->
         <div class="row stats-row">
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon orders">
                         <i class="fas fa-shopping-cart"></i>
@@ -231,7 +199,7 @@
                 </div>
             </div>
             
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon products">
                         <i class="fas fa-box"></i>
@@ -241,7 +209,7 @@
                 </div>
             </div>
             
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon users">
                         <i class="fas fa-users"></i>
@@ -250,8 +218,28 @@
                     <p class="stat-value" th:text="${totalUsers != null ? totalUsers : '0'}">0</p>
                 </div>
             </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon employees">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h6 class="stat-title">Nhân viên</h6>
+                    <p class="stat-value" th:text="${totalEmployees != null ? totalEmployees : '0'}">0</p>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon orders">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h6 class="stat-title">Tổng tài khoản</h6>
+                    <p class="stat-value" th:text="${totalAccounts != null ? totalAccounts : '0'}">0</p>
+                </div>
+            </div>
             
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-2 col-md-4 col-sm-6 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon revenue">
                         <i class="fas fa-dollar-sign"></i>
@@ -262,58 +250,69 @@
             </div>
         </div>
         
-        <!-- Quick Actions -->
         <div class="quick-actions">
             <h3 class="mb-4 text-center" style="color: #333; font-weight: bold;">
                 <i class="fas fa-bolt"></i> Thao tác nhanh
             </h3>
             
-            <div class="row">
-                <div class="col-md-3 mb-4">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-4 col-sm-6">
                     <a href="/admin/orders" class="action-card orders">
                         <div class="action-icon">
                             <i class="fas fa-clipboard-list"></i>
                         </div>
-                        <h4 class="action-title">Quản lý đơn hàng</h4>
-                        <p class="action-description">
-                            Xem và cập nhật đơn hàng
-                        </p>
+                        <h4 class="action-title">Quản lý Đơn hàng</h4>
+                        <p class="action-description">Xem và cập nhật trạng thái</p>
                     </a>
                 </div>
                 
-                <div class="col-md-3 mb-4">
+                <div class="col-lg-3 col-md-4 col-sm-6">
                     <a href="/admin/products" class="action-card products">
                         <div class="action-icon">
                             <i class="fas fa-box-open"></i>
                         </div>
-                        <h4 class="action-title">Quản lý sản phẩm</h4>
-                        <p class="action-description">
-                            Thêm, sửa, xóa sản phẩm
-                        </p>
+                        <h4 class="action-title">Quản lý Sản phẩm</h4>
+                        <p class="action-description">Thêm, sửa, xóa sản phẩm</p>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <a href="/admin/categories" class="action-card categories">
+                        <div class="action-icon">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <h4 class="action-title">Quản lý Loại hàng</h4>
+                        <p class="action-description">Phân loại sản phẩm</p>
                     </a>
                 </div>
                 
-                <div class="col-md-3 mb-4">
+                <div class="col-lg-3 col-md-4 col-sm-6">
                     <a href="/admin/promotion" class="action-card promotions">
                         <div class="action-icon">
                             <i class="fas fa-tags"></i>
                         </div>
                         <h4 class="action-title">Quản lý Khuyến mãi</h4>
-                        <p class="action-description">
-                            Tạo chương trình khuyến mãi
-                        </p>
+                        <p class="action-description">Tạo chương trình giảm giá</p>
                     </a>
                 </div>
 
-                <div class="col-md-3 mb-4">
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <a href="/admin/users" class="action-card users">
+                        <div class="action-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4 class="action-title">Quản lý Người dùng</h4>
+                        <p class="action-description">Tài khoản khách hàng</p>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-md-4 col-sm-6">
                     <a href="/admin/employees" class="action-card employees">
                         <div class="action-icon">
                             <i class="fas fa-user-tie"></i>
                         </div>
                         <h4 class="action-title">Quản lý Nhân viên</h4>
-                        <p class="action-description">
-                            Quản lý tài khoản nhân viên
-                        </p>
+                        <p class="action-description">Tài khoản nội bộ</p>
                     </a>
                 </div>
             </div>

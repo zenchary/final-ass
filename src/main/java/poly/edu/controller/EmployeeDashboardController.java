@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import poly.edu.dao.AccountDAO;
+import poly.edu.model.Account;
 import poly.edu.repository.ProductRepository;
 import poly.edu.service.AuthService;
 import poly.edu.service.OrderService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/employee")
@@ -52,7 +55,19 @@ public class EmployeeDashboardController {
             // Get statistics
             long totalOrders = orderService.getAllOrders().size();
             long totalProducts = productRepository.count();
-            long totalUsers = accountDAO.count();
+            long totalAccounts = accountDAO.count();
+            
+            // Đếm số lượng Users và Employees
+            List<Account> allAccounts = accountDAO.findAll();
+            long totalUsers = allAccounts.stream()
+                .filter(acc -> acc.getRoles().stream()
+                    .anyMatch(role -> role.getRoleName().equals("USER")))
+                .count();
+            
+            long totalEmployees = allAccounts.stream()
+                .filter(acc -> acc.getRoles().stream()
+                    .anyMatch(role -> role.getRoleName().equals("EMPLOYEE")))
+                .count();
             
             Double totalRevenue = orderService.getTotalRevenue();
             if (totalRevenue == null) {
@@ -61,7 +76,9 @@ public class EmployeeDashboardController {
             
             model.addAttribute("totalOrders", totalOrders);
             model.addAttribute("totalProducts", totalProducts);
+            model.addAttribute("totalAccounts", totalAccounts);
             model.addAttribute("totalUsers", totalUsers);
+            model.addAttribute("totalEmployees", totalEmployees);
             model.addAttribute("totalRevenue", totalRevenue);
             
             // Order statistics by status
@@ -85,7 +102,9 @@ public class EmployeeDashboardController {
             e.printStackTrace();
             model.addAttribute("totalOrders", 0);
             model.addAttribute("totalProducts", 0);
+            model.addAttribute("totalAccounts", 0);
             model.addAttribute("totalUsers", 0);
+            model.addAttribute("totalEmployees", 0);
             model.addAttribute("totalRevenue", 0.0);
         }
         
