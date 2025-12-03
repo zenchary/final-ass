@@ -1,5 +1,6 @@
 package poly.edu;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,20 +10,19 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import poly.edu.config.OAuth2LoginSuccessHandler;
+import poly.edu.service.CustomOAuth2UserService;
 import poly.edu.service.DaoUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // OPTION 1: Standard encoder (Khuyến nghị - cần migrate password)
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        
-        // OPTION 2: Plain text encoder (KHÔNG AN TOÀN - chỉ dùng test)
-        // return new CustomPasswordEncoder();
-    }
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -37,37 +37,27 @@ public class SecurityConfig {
 
         // Phân quyền sử dụng
         http.authorizeHttpRequests(req -> {
-            // Yêu cầu quyền USER để truy cập /home
-//            req.requestMatchers("/home").hasRole("USER");
-            
-            // Các URL yêu cầu quyền ADMIN
             req.requestMatchers("/admin/**").hasRole("ADMIN");
-            
-            // Các URL yêu cầu quyền EMPLOYEE hoặc ADMIN
             req.requestMatchers("/employee/**").hasAnyRole("EMPLOYEE", "ADMIN");
-            
-            // Các URL yêu cầu authenticated (đăng nhập)
             req.requestMatchers("/account", "/account/update", "/account/doiMatKhau",
                               "/profile/**", "/orders/**", "/cart/**").authenticated();
             
             // Cho phép truy cập public
-            req.requestMatchers("/", "/product/**", "/category/**", 
+            req.requestMatchers("/", "/home", "/product/**", "/category/**", 
                               "/search", "/about", "/terms", "/privacy",
                               "/promotions", "/test-db", "/under-construction",
                               "/account/login", "/account/register", 
                               "/account/forgot", "/account/reset",
-                              "/css/**", "/js/**", "/images/**", "/assets/**").permitAll();
+                              "/css/**", "/js/**", "/images/**", "/assets/**", "/photos/**").permitAll();
             
-            // Tất cả các request khác cần authenticated
             req.anyRequest().permitAll();
         });
 
-        // Từ chối truy xuất nếu vai trò không phù hợp
         http.exceptionHandling(denied -> 
             denied.accessDeniedPage("/unauthorized.html")
         );
 
-        // Form đăng nhập
+        // Form đăng nhập thường
         http.formLogin(login -> login
             .loginPage("/account/login")
             .loginProcessingUrl("/account/login")
@@ -76,6 +66,15 @@ public class SecurityConfig {
             .defaultSuccessUrl("/home", true)
             .failureUrl("/account/login?error=true")
             .permitAll()
+        );
+
+        // ==== THÊM CẤU HÌNH OAUTH2 (GOOGLE) TẠI ĐÂY ====
+        http.oauth2Login(oauth2 -> oauth2
+            .loginPage("/account/login") // Dùng chung trang login
+            .userInfoEndpoint(userInfo -> userInfo
+                .userService(customOAuth2UserService) // Service xử lý dữ liệu User từ Google
+            )
+            .successHandler(oAuth2LoginSuccessHandler) // Handler lưu session sau khi login thành công
         );
 
         // Đăng xuất

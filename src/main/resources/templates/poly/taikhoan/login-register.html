@@ -1,160 +1,413 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Đăng nhập / Đăng ký</title>
-<link rel="stylesheet" href="/header.css">
-<link rel="stylesheet" href="/footer.css">
-<link rel="stylesheet" href="/style.css">
-<style>
-.tab-container {
-    width: 420px;
-    margin: 60px auto;
-    background: linear-gradient(#667eea);
-    color: rgb(0, 0, 0);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 0 15px rgba(255,255,255,0.15);
-}
-.tab-buttons {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-.tab-buttons button {
-    flex: 1;
-    padding: 10px;
-    background: #333;
-    border: none;
-    color: #ccc;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-radius: 5px;
-}
-.tab-buttons button.active {
-    background: #555;
-    color: #fff;
-    font-weight: bold;
-}
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-.form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    background: #FFFFFF;
-    color: rgb(0, 0, 0);
-}
-.btn-submit {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.btn-submit:hover { background: #0056b3; }
-.error-message { color: #ff6666; margin-top: 10px; text-align: center; }
-.success-message { color: #66ff99; margin-top: 10px; text-align: center; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập / Đăng ký - Poly Shop</title>
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Base Styles */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            padding: 40px 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Tabs Styling */
+        .auth-tabs {
+            display: flex;
+            background: #f1f3f5;
+            padding: 6px;
+            margin: 25px 25px 10px;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #495057;
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Form Content */
+        .tab-content {
+            display: none;
+            padding: 25px 35px 35px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+            font-size: 1.1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .form-control:focus {
+            background: white;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        /* Actions */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .forgot-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .forgot-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            accent-color: #667eea;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0;
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .divider span {
+            padding: 0 15px;
+            font-weight: 500;
+        }
+
+        /* Social Login */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            color: #333;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-google:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            transform: translateY(-1px);
+        }
+
+        .btn-google img {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Alerts */
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .error-message {
+            background-color: #fff5f5;
+            color: #e53e3e;
+            border: 1px solid #fed7d7;
+        }
+
+        .success-message {
+            background-color: #f0fff4;
+            color: #38a169;
+            border: 1px solid #c6f6d5;
+        }
+    </style>
 </head>
 <body>
 
-<div th:replace="poly/fragments/header :: header"></div>
+    <div th:replace="poly/fragments/header :: header"></div>
 
-<div class="tab-container">
-    <div class="tab-buttons">
-        <button id="login-tab" class="active" onclick="showTab('login')">Đăng nhập</button>
-        <button id="register-tab" onclick="showTab('register')">Đăng ký</button>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button id="login-tab" class="tab-btn active" onclick="showTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+                <button id="register-tab" class="tab-btn" onclick="showTab('register')">
+                    <i class="fas fa-user-plus"></i> Đăng ký
+                </button>
+            </div>
+
+            <div id="login" class="tab-content active">
+                <h2>Chào mừng trở lại! 👋</h2>
+                <form th:action="@{/account/login}" method="post">
+                    <div class="form-group">
+                        <label class="form-label">Tên đăng nhập</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="form-control" name="username" 
+                                   th:value="${rememberedUser}" placeholder="Nhập tên đăng nhập" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-control" name="password" placeholder="Nhập mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember"> 
+                            <span>Ghi nhớ đăng nhập</span>
+                        </label>
+                        <a href="/account/forgot" class="forgot-link">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Đăng nhập</button>
+
+                    <div class="divider">
+                        <span>Hoặc đăng nhập với</span>
+                    </div>
+
+                    <a href="/oauth2/authorization/google" class="btn-google">
+                        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google">
+                        <span>Google</span>
+                    </a>
+
+                    <div th:if="${error}" class="message error-message">
+                        <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+                    </div>
+                    <div th:if="${message}" class="message success-message">
+                        <i class="fas fa-check-circle"></i> <span th:text="${message}"></span>
+                    </div>
+                </form>
+            </div>
+
+            <div id="register" class="tab-content">
+                <h2>Tạo tài khoản mới 🚀</h2>
+                <form th:action="@{/account/register}" method="post">
+                    <div class="form-group">
+                        <label class="form-label">Tên đăng nhập</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="form-control" name="username" placeholder="Chọn tên đăng nhập" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="form-control" name="email" placeholder="example@email.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Họ và tên</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" class="form-control" name="fullName" placeholder="Nhập họ tên đầy đủ" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" class="form-control" name="phone" placeholder="Nhập số điện thoại" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Địa chỉ</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" class="form-control" name="address" placeholder="Nhập địa chỉ giao hàng" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-key"></i>
+                            <input type="password" class="form-control" name="password" placeholder="Tạo mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Xác nhận mật khẩu</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-check-double"></i>
+                            <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Đăng ký ngay</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- LOGIN -->
-    <div id="login" class="tab-content active">
-    <h2>Đăng nhập</h2>
-    <form th:action="@{/account/login}" method="post">
-        <div class="form-group">
-            <label for="username">Tên đăng nhập</label>
-            <input type="text" id="username" name="username"
-                   th:value="${rememberedUser}" placeholder="Nhập tên đăng nhập" required>
-        </div>
+    <div th:replace="poly/fragments/footer :: footer"></div>
 
-        <div class="form-group">
-            <label for="password">Mật khẩu</label>
-            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
-        </div>
-
-        <!-- ✅ Ghi nhớ - Quên mật khẩu -->
-        <div class="form-remember-forgot">
-            <label><input type="checkbox" name="remember"> Ghi nhớ tài khoản</label>
-            <a href="/account/forgot" class="forgot-link">Quên mật khẩu?</a>
-        </div>
-
-        <button type="submit" class="btn-submit">Đăng nhập</button>
-
-        <p th:if="${error}" th:text="${error}" class="error-message"></p>
-        <p th:if="${message}" th:text="${message}" class="success-message"></p>
-    </form>
-</div>
-
-    <!-- REGISTER -->
-    <div id="register" class="tab-content">
-        <h2>Đăng ký tài khoản</h2>
-        <form th:action="@{/account/register}" method="post">
-            <div class="form-group">
-                <label>Tên đăng nhập</label>
-                <input type="text" name="username" placeholder="Nhập tên đăng nhập" required>
-            </div>
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" placeholder="Nhập email" required>
-            </div>
-
-            <div class="form-group">
-                <label>Họ và tên</label>
-                <input type="text" name="fullName" placeholder="Nhập họ tên" required>
-            </div>
-
-            <div class="form-group">
-                <label>Số điện thoại</label>
-                <input type="tel" name="phone" placeholder="Nhập số điện thoại" required>
-            </div>
-
-            <div class="form-group">
-                <label>Địa chỉ</label>
-                <input type="text" name="address" placeholder="Nhập địa chỉ" required>
-            </div>
-
-            <div class="form-group">
-                <label>Mật khẩu</label>
-                <input type="password" name="password" placeholder="Nhập mật khẩu" required>
-            </div>
-
-            <div class="form-group">
-                <label>Xác nhận mật khẩu</label>
-                <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
-            </div>
-
-            <button type="submit" class="btn-submit">Đăng ký</button>
-        </form>
-    </div>
-</div>
-
-<div th:replace="poly/fragments/footer :: footer"></div>
-
-<script>
-function showTab(tab) {
-    document.querySelectorAll(".tab-buttons button").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-    document.getElementById(tab + "-tab").classList.add("active");
-    document.getElementById(tab).classList.add("active");
-}
-</script>
+    <script>
+        function showTab(tabId) {
+            // Remove active class from all buttons and contents
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked button and target content
+            document.getElementById(tabId + '-tab').classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
 
 </body>
 </html>

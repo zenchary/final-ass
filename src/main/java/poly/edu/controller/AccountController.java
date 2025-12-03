@@ -116,7 +116,7 @@ public class AccountController {
 
     // ================== Đăng xuất ==================
     // Spring Security sẽ tự xử lý /logout, không cần method này
-    
+
     // ================== Cập nhật thông tin ==================
     @GetMapping("/update")
     public String updatePage(Model model) {
@@ -124,6 +124,7 @@ public class AccountController {
             return "redirect:/account/login";
         }
         
+        // Lấy thông tin mới nhất từ DB để hiển thị lên form
         Account user = authService.getAccount();
         model.addAttribute("account", user);
         return "poly/taikhoan/update-account";
@@ -138,24 +139,36 @@ public class AccountController {
         Account currentUser = authService.getAccount();
 
         try {
+            // Kiểm tra xem email mới có bị trùng với tài khoản KHÁC không
             Optional<Account> existingEmail = accountDAO.findByEmail(formAccount.getEmail());
             if (existingEmail.isPresent() && 
                 existingEmail.get().getAccountId() != currentUser.getAccountId()) {
+                
                 model.addAttribute("error", "❌ Email này đã được sử dụng bởi tài khoản khác!");
-                model.addAttribute("account", currentUser);
+                // Trả lại form với dữ liệu người dùng vừa nhập để họ không phải nhập lại từ đầu
+                model.addAttribute("account", formAccount); 
                 return "poly/taikhoan/update-account";
             }
 
+            // Cập nhật các thông tin cho phép thay đổi
             currentUser.setEmail(formAccount.getEmail());
             currentUser.setFullName(formAccount.getFullName());
+            
+            // Cập nhật SĐT và Địa chỉ
             currentUser.setPhone(formAccount.getPhone());
             currentUser.setAddress(formAccount.getAddress());
 
+            // Lưu vào database
             accountDAO.save(currentUser);
+            
+            // Cập nhật lại thông tin trong session (nếu bạn đang lưu user trong session thủ công)
+            // session.setAttribute("account", currentUser); 
+
             model.addAttribute("account", currentUser);
             model.addAttribute("message", "✅ Cập nhật thông tin thành công!");
 
         } catch (Exception e) {
+            e.printStackTrace();
             model.addAttribute("error", "❌ Lỗi khi cập nhật: " + e.getMessage());
             model.addAttribute("account", formAccount);
         }
