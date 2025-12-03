@@ -2,149 +2,303 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Trang tài khoản</title>
+    <title>Thông tin tài khoản - Poly Shop</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/header.css">
     <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .account-container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .account-header {
-            text-align: center;
-            padding-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
+        .account-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
 
-        .account-header h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .account-header p {
-            color: #666;
-            margin: 10px 0;
-            font-size: 16px;
-        }
-
-        .account-links {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .account-links a {
-            display: block;
-            padding: 15px 20px;
+        .profile-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
+            padding: 40px 20px;
             text-align: center;
-            font-weight: 600;
+            color: white;
+        }
+
+        /* Avatar Styling */
+        .avatar-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.5);
+            object-fit: cover;
+            background: white;
+        }
+
+        .upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: #fff;
+            color: #667eea;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .account-links a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        .upload-btn:hover {
+            transform: scale(1.1);
+            background: #f0f0f0;
         }
 
-        .admin-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+        .user-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
 
-        .employee-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+        .user-email {
+            opacity: 0.9;
+            font-size: 1rem;
         }
 
         .role-badge {
-            display: inline-block;
+            background: rgba(255,255,255,0.2);
             padding: 5px 15px;
             border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 0.85rem;
+            font-weight: 600;
             margin-left: 10px;
+            vertical-align: middle;
         }
 
-        .badge-admin {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #000;
+        .profile-details {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
 
-        .badge-employee {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .detail-label {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
             color: white;
         }
+
+        /* Icon Colors */
+        .icon-edit { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .icon-key { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .icon-order { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .icon-admin { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        
+        .action-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+        .action-info p { margin: 0; color: #666; font-size: 0.9rem; }
+        
+        .logout-btn {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+        }
+        .logout-btn:hover { border-color: #fc8181; }
+        .logout-btn .action-icon { background: #fc8181; }
+        
+        /* Alert messages */
+        .alert-float {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            border-radius: 10px;
+            padding: 15px 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease;
+        }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .alert-success { background: #d4edda; color: #155724; border-left: 5px solid #28a745; }
+        .alert-error { background: #f8d7da; color: #721c24; border-left: 5px solid #dc3545; }
     </style>
 </head>
 <body>
 
     <div th:replace="poly/fragments/header :: header"></div>
 
-    <!-- Account Container -->
-    <main>
-        <div class="account-container">
-            <div class="account-header">
-                <h1>
-                    Xin chào, <span th:text="${account.fullName}">Nguyễn Văn A</span> 👤
-                    <span th:if="${isAdmin}" class="role-badge badge-admin">👑 ADMIN</span>
-                    <span th:if="${isEmployee and !isAdmin}" class="role-badge badge-employee">👔 EMPLOYEE</span>
+    <div th:if="${message}" class="alert-float alert-success">
+        <i class="fas fa-check-circle"></i> <span th:text="${message}"></span>
+    </div>
+    <div th:if="${error}" class="alert-float alert-error">
+        <i class="fas fa-exclamation-triangle"></i> <span th:text="${error}"></span>
+    </div>
+
+    <div class="account-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                
+                <div class="avatar-container">
+                    <img th:src="@{'/avatars/user_' + ${account.accountId} + '.jpg?t=' + ${#dates.createNow().getTime()}}" 
+				     class="avatar-img" 
+				     onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
+                    
+                    <form id="avatarForm" action="/account/upload-avatar" method="POST" enctype="multipart/form-data">
+                        <input type="file" name="image" id="fileInput" style="display: none;" accept="image/*" onchange="document.getElementById('avatarForm').submit()">
+                        <label for="fileInput" class="upload-btn" title="Đổi ảnh đại diện">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                    </form>
+                </div>
+
+                <h1 class="user-name">
+                    <span th:text="${account.fullName}">User Name</span>
+                    <span th:if="${isAdmin}" class="role-badge">ADMIN</span>
+                    <span th:if="${isEmployee and !isAdmin}" class="role-badge">STAFF</span>
                 </h1>
-                <p>
-                    Email: <span th:text="${account.email}">abc@gmail.com</span>
-                </p>
-                <p>
-                    Tài khoản: <span th:text="${account.username}">nguyenvana</span>
-                </p>
-                <p>
-                    Trạng thái: <span th:text="${account.active ? '✅ Đã kích hoạt' : '❌ Chưa kích hoạt'}">Đã kích hoạt</span>
-                </p>
+                <div class="user-email" th:text="${account.email}">email@example.com</div>
             </div>
-
-            <div class="account-links">
-                <a href="/account/update">
-                    <i class="fas fa-user-edit"></i> Cập nhật thông tin
-                </a>
-                
-                <a href="/account/doiMatKhau">
-                    <i class="fas fa-key"></i> Đổi mật khẩu
-                </a>
-                
-                <a href="/orders">
-                    <i class="fas fa-shopping-bag"></i> Đơn hàng của tôi
-                </a>
-                
-                <!-- Admin Dashboard Button -->
-                <a href="/admin/dashboard" class="admin-btn" th:if="${isAdmin}">
-                    <i class="fas fa-crown"></i> Bảng điều khiển Admin
-                </a>
-                
-                <!-- Employee Dashboard Button -->
-                <a href="/employee/dashboard" class="employee-btn" th:if="${isEmployee}">
-                    <i class="fas fa-user-tie"></i> Bảng điều khiển Nhân viên
-                </a>
-                
-                <a href="/account/logout" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                </a>
+            
+            <div class="profile-details">
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-id-card"></i> Tên đăng nhập</span>
+                    <span class="detail-value" th:text="${account.username}">username</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-phone"></i> Số điện thoại</span>
+                    <span class="detail-value" th:text="${account.phone ?: 'Chưa cập nhật'}">0123456789</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Địa chỉ</span>
+                    <span class="detail-value" th:text="${account.address ?: 'Chưa cập nhật'}">Address</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label"><i class="fas fa-toggle-on"></i> Trạng thái</span>
+                    <span class="detail-value" style="color: #28a745;">
+                        <i class="fas fa-check-circle"></i> Đã kích hoạt
+                    </span>
+                </div>
             </div>
-
         </div>
-    </main>
+
+        <div class="action-grid">
+            <a href="/account/update" class="action-card">
+                <div class="action-icon icon-edit"><i class="fas fa-user-edit"></i></div>
+                <div class="action-info">
+                    <h3>Cập nhật thông tin</h3>
+                    <p>Chỉnh sửa thông tin cá nhân</p>
+                </div>
+            </a>
+
+            <a href="/account/doiMatKhau" class="action-card">
+                <div class="action-icon icon-key"><i class="fas fa-key"></i></div>
+                <div class="action-info">
+                    <h3>Đổi mật khẩu</h3>
+                    <p>Thay đổi mật khẩu bảo mật</p>
+                </div>
+            </a>
+
+            <a href="/orders" class="action-card">
+                <div class="action-icon icon-order"><i class="fas fa-shopping-bag"></i></div>
+                <div class="action-info">
+                    <h3>Đơn hàng của tôi</h3>
+                    <p>Xem lịch sử mua sắm</p>
+                </div>
+            </a>
+
+            <a href="/admin/dashboard" class="action-card" th:if="${isAdmin}">
+                <div class="action-icon icon-admin"><i class="fas fa-crown"></i></div>
+                <div class="action-info">
+                    <h3>Quản trị hệ thống</h3>
+                    <p>Truy cập trang Admin</p>
+                </div>
+            </a>
+
+            <a href="/employee/dashboard" class="action-card" th:if="${isEmployee and !isAdmin}">
+                <div class="action-icon icon-admin"><i class="fas fa-user-tie"></i></div>
+                <div class="action-info">
+                    <h3>Kênh nhân viên</h3>
+                    <p>Quản lý bán hàng</p>
+                </div>
+            </a>
+
+            <a href="/account/logout" class="action-card logout-btn">
+                <div class="action-icon"><i class="fas fa-sign-out-alt"></i></div>
+                <div class="action-info">
+                    <h3>Đăng xuất</h3>
+                    <p>Thoát khỏi tài khoản</p>
+                </div>
+            </a>
+        </div>
+    </div>
 
     <div th:replace="poly/fragments/footer :: footer"></div>
 

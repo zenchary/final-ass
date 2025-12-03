@@ -1,118 +1,101 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Đặt lại mật khẩu</title>
-<link rel="stylesheet" href="/header.css">
-<link rel="stylesheet" href="/footer.css">
-<link rel="stylesheet" href="/style.css">
-<style>
-/* --- Giao diện khung chính --- */
-.reset-container {
-	width: 420px;
-	margin: 80px auto;
-	background: linear-gradient(135deg, #667eea, #764ba2);
-	color: #fff;
-	border-radius: 12px;
-	padding: 25px 30px;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-	text-align: center;
-}
-
-.reset-container h2 {
-	margin-bottom: 20px;
-	font-size: 22px;
-	font-weight: bold;
-}
-
-.form-group {
-	margin-bottom: 15px;
-	text-align: left;
-}
-
-.form-group label {
-	display: block;
-	margin-bottom: 6px;
-	font-weight: 500;
-}
-
-.form-group input {
-	width: 100%;
-	padding: 10px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-	font-size: 15px;
-	color: #333;
-}
-
-.btn-submit {
-	width: 100%;
-	padding: 10px;
-	background: #007bff;
-	color: white;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: 0.3s;
-	font-size: 16px;
-}
-
-.btn-submit:hover {
-	background: #0056b3;
-}
-
-.message {
-	margin-top: 15px;
-	font-size: 14px;
-	color: #ffeb3b;
-}
-
-.back-link {
-	display: inline-block;
-	margin-top: 20px;
-	color: #66b3ff;
-	text-decoration: none;
-	transition: 0.3s;
-}
-
-.back-link:hover {
-	color: #3399ff;
-	text-decoration: underline;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Đặt lại mật khẩu</title>
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            padding: 20px;
+        }
+        .reset-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 480px;
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 8px; color: #555; font-weight: 600; }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        .form-control:read-only { background: #f8f9fa; color: #6c757d; }
+        .form-control:focus { border-color: #667eea; outline: none; }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .alert { padding: 12px; border-radius: 8px; margin-top: 20px; text-align: center; }
+        .alert-error { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #667eea; text-decoration: none; }
+    </style>
 </head>
 <body>
-	<div th:replace="poly/fragments/header :: header"></div>
+    <div th:replace="poly/fragments/header :: header"></div>
 
-	<div class="reset-container">
-		<h2>Đặt lại mật khẩu</h2>
-		<p>Nhập mã xác nhận và mật khẩu mới của bạn.</p>
-		<form th:action="@{/account/reset}" method="post">
-			<div class="form-group">
-				<label for="email">Email</label> <input type="email" id="email"
-					name="email" th:value="${param.email}" readonly required>
-			</div>
-			<div class="form-group">
-				<label for="code">Mã xác nhận</label> <input type="text" id="code"
-					name="code" placeholder="Nhập mã xác nhận" required>
-			</div>
-			<div class="form-group">
-				<label for="newPassword">Mật khẩu mới</label> <input type="password"
-					id="newPassword" name="newPassword" placeholder="Nhập mật khẩu mới"
-					required>
-			</div>
-			<div class="form-group">
-				<label for="confirmPassword">Xác nhận mật khẩu mới</label> <input
-					type="password" id="confirmPassword" name="confirmPassword"
-					placeholder="Xác nhận mật khẩu mới" required>
-			</div>
-			<button type="submit" class="btn-submit">Đổi mật khẩu</button>
-			<p th:if="${error}" th:text="${error}" class="message"></p>
-			<p th:if="${message}" th:text="${message}" class="message"></p>
-		</form>
-		<a href="/account/login" class="back-link">← Quay lại đăng nhập</a>
-	</div>
+    <div class="wrapper">
+        <div class="reset-card">
+            <h2><i class="fas fa-unlock-alt"></i> Đặt lại mật khẩu</h2>
+            
+            <form th:action="@{/account/reset}" method="post">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" th:value="${param.email}" readonly required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mã xác nhận (Check mail)</label>
+                    <input type="text" class="form-control" name="code" placeholder="Nhập mã 8 ký tự" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu mới</label>
+                    <input type="password" class="form-control" name="newPassword" placeholder="Nhập mật khẩu mới" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Xác nhận mật khẩu</label>
+                    <input type="password" class="form-control" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+                </div>
+                
+                <button type="submit" class="btn-submit">Hoàn tất</button>
+            </form>
+            
+            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+            <div th:if="${message}" class="alert" style="background:#f0fff4; color:#38a169" th:text="${message}"></div>
+            
+            <a href="/account/login" class="back-link">← Quay lại đăng nhập</a>
+        </div>
+    </div>
 
-	<div th:replace="poly/fragments/footer :: footer"></div>
+    <div th:replace="poly/fragments/footer :: footer"></div>
 </body>
 </html>

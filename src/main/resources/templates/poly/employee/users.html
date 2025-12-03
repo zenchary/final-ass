@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Khách hàng - Employee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f3f4f6; font-family: 'Segoe UI', sans-serif; }
+        .main-card {
+            background: white; border-radius: 15px; border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; margin-top: 30px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white; padding: 25px; border: none;
+        }
+        .search-box {
+            position: relative; max-width: 300px;
+        }
+        .search-box input {
+            border-radius: 20px; padding-left: 35px; border: 1px solid #fff;
+            background: rgba(255,255,255,0.2); color: white;
+        }
+        .search-box input::placeholder { color: rgba(255,255,255,0.8); }
+        .search-box input:focus {
+            background: white; color: #333; outline: none; border-color: white;
+        }
+        .search-box i {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.8);
+        }
+        .search-box input:focus + i { color: #4facfe; } /* Hack để đổi màu icon khi focus */
+        
+        .avatar-circle {
+            width: 40px; height: 40px; background: #e9ecef; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #6c757d; font-weight: bold;
+        }
+        .status-active { color: #198754; background: #d1e7dd; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
+        .status-inactive { color: #dc3545; background: #f8d7da; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container pb-5">
+        <div class="main-card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="m-0"><i class="fas fa-users"></i> Danh sách Khách hàng</h3>
+                    <a href="/employee/dashboard" class="btn btn-light btn-sm fw-bold">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <form action="/employee/users" method="get" class="search-box">
+                        <input type="text" name="search" class="form-control" placeholder="Tìm tên, email, sđt..." th:value="${search}">
+                        <i class="fas fa-search"></i>
+                    </form>
+                    
+                    <div class="d-flex gap-2">
+                        <a href="/employee/users/add" class="btn btn-light text-primary fw-bold">
+                            <i class="fas fa-user-plus"></i> Thêm mới
+                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Trạng thái
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/employee/users">Tất cả</a></li>
+                                <li><a class="dropdown-item" href="/employee/users?status=active">Đang hoạt động</a></li>
+                                <li><a class="dropdown-item" href="/employee/users?status=inactive">Đã khóa</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div th:if="${message}" class="alert m-3" 
+                     th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}"
+                     th:text="${message}"></div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Khách hàng</th>
+                                <th>Liên hệ</th>
+                                <th>Địa chỉ</th>
+                                <th>Ngày tạo</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${users.isEmpty()}">
+                                <td colspan="6" class="text-center py-5 text-muted">Không tìm thấy khách hàng nào</td>
+                            </tr>
+                            <tr th:each="user : ${users}">
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-3">
+                                            <span th:text="${#strings.substring(user.username,0,1).toUpperCase()}">U</span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark" th:text="${user.fullName}">Tên</div>
+                                            <small class="text-muted" th:text="'@'+${user.username}">username</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div th:text="${user.email}">email</div>
+                                    <small class="text-muted" th:text="${user.phone}">phone</small>
+                                </td>
+                                <td>
+                                    <span class="d-inline-block text-truncate" style="max-width: 150px;" 
+                                          th:text="${user.address}" th:title="${user.address}">Địa chỉ</span>
+                                </td>
+                                <td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}"></td>
+                                <td>
+                                    <span th:if="${user.active}" class="status-active">Hoạt động</span>
+                                    <span th:unless="${user.active}" class="status-inactive">Đã khóa</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a th:href="@{/employee/users/edit/{id}(id=${user.accountId})}" class="btn btn-light btn-sm text-primary" title="Sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    <form th:if="${user.active}" th:action="@{/employee/users/delete/{id}(id=${user.accountId})}" method="post" class="d-inline" onsubmit="return confirm('Khóa tài khoản này?');">
+                                        <button class="btn btn-light btn-sm text-danger" title="Khóa tài khoản">
+                                            <i class="fas fa-lock"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <form th:unless="${user.active}" th:action="@{/employee/users/activate/{id}(id=${user.accountId})}" method="post" class="d-inline" onsubmit="return confirm('Mở khóa tài khoản này?');">
+                                        <button class="btn btn-light btn-sm text-success" title="Mở khóa">
+                                            <i class="fas fa-unlock"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Đơn hàng - Employee</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f3f4f6; font-family: 'Segoe UI', sans-serif; }
+        .main-card {
+            background: white; border-radius: 15px; border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; margin-top: 30px;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px; border: none;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .stats-container { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .stat-box {
+            flex: 1; min-width: 150px; background: white; padding: 15px;
+            border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #ccc;
+        }
+        .stat-title { font-size: 0.85rem; color: #666; margin-bottom: 5px; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: #333; }
+        
+        .table thead th {
+            background-color: #f8f9fa; border-bottom: 2px solid #e9ecef;
+            color: #495057; font-weight: 600; text-transform: uppercase; font-size: 0.85rem;
+        }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .st-1 { background: #fff3cd; color: #856404; } /* Chờ xử lý */
+        .st-2 { background: #cff4fc; color: #055160; } /* Đang xử lý */
+        .st-3 { background: #cfe2ff; color: #084298; } /* Đang giao */
+        .st-4 { background: #d1e7dd; color: #0f5132; } /* Đã giao */
+        .st-5 { background: #f8d7da; color: #842029; } /* Đã hủy */
+        
+        .btn-action { padding: 5px 10px; border-radius: 6px; transition: all 0.2s; }
+        .btn-action:hover { transform: translateY(-2px); }
+        .filter-select { border-radius: 20px; padding: 5px 15px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container pb-5">
+        
+        <div class="stats-container mt-4">
+            <div class="stat-box" style="border-color: #ffc107;">
+                <div class="stat-title">Chờ xử lý</div>
+                <div class="stat-value text-warning" th:text="${pendingCount}">0</div>
+            </div>
+            <div class="stat-box" style="border-color: #0dcaf0;">
+                <div class="stat-title">Đang xử lý</div>
+                <div class="stat-value text-info" th:text="${processingCount}">0</div>
+            </div>
+            <div class="stat-box" style="border-color: #0d6efd;">
+                <div class="stat-title">Đang giao</div>
+                <div class="stat-value text-primary" th:text="${shippedCount}">0</div>
+            </div>
+            <div class="stat-box" style="border-color: #198754;">
+                <div class="stat-title">Hoàn thành</div>
+                <div class="stat-value text-success" th:text="${deliveredCount}">0</div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <div class="card-header">
+                <h4 class="m-0"><i class="fas fa-clipboard-list me-2"></i> Quản lý Đơn hàng</h4>
+                <div>
+                    <a href="/employee/dashboard" class="btn btn-light btn-sm me-2">
+                        <i class="fas fa-arrow-left"></i> Dashboard
+                    </a>
+                    <form action="/employee/orders" method="get" class="d-inline-block">
+                        <select name="statusFilter" class="filter-select" onchange="this.form.submit()">
+                            <option value="">-- Tất cả trạng thái --</option>
+                            <option value="1" th:selected="${statusFilter == 1}">🟡 Chờ xử lý</option>
+                            <option value="2" th:selected="${statusFilter == 2}">🔵 Đang xử lý</option>
+                            <option value="3" th:selected="${statusFilter == 3}">🚚 Đang giao</option>
+                            <option value="4" th:selected="${statusFilter == 4}">✅ Đã giao</option>
+                            <option value="5" th:selected="${statusFilter == 5}">❌ Đã hủy</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card-body p-0">
+                <div th:if="${message}" class="alert m-3" 
+                     th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}"
+                     th:text="${message}"></div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Mã ĐH</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Cập nhật nhanh</th>
+                                <th class="text-end pe-4">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${orders.isEmpty()}">
+                                <td colspan="7" class="text-center py-5 text-muted">Không có đơn hàng nào</td>
+                            </tr>
+                            <tr th:each="order : ${orders}">
+                                <td class="ps-4 fw-bold text-primary">#<span th:text="${order.orderId}"></span></td>
+                                <td>
+                                    <div class="fw-bold" th:text="${order.account != null ? order.account.fullName : 'Khách lẻ'}"></div>
+                                    <small class="text-muted" th:text="${order.phone}">0123...</small>
+                                </td>
+                                <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td class="fw-bold text-danger" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 0, 'POINT') + ' ₫'}"></td>
+                                <td>
+                                    <span th:class="'status-badge st-' + ${order.statusId}"
+                                          th:text="${order.statusId == 1 ? 'Chờ xử lý' : (order.statusId == 2 ? 'Đang xử lý' : (order.statusId == 3 ? 'Đang giao' : (order.statusId == 4 ? 'Đã giao' : 'Đã hủy')))}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <form th:if="${order.statusId < 4}" th:action="@{/employee/orders/{id}/update-status(id=${order.orderId})}" method="post">
+                                        <div class="input-group input-group-sm" style="width: 140px;">
+                                            <select name="newStatus" class="form-select form-select-sm">
+                                                <option value="2" th:if="${order.statusId == 1}">Xử lý</option>
+                                                <option value="3" th:if="${order.statusId == 2}">Giao hàng</option>
+                                                <option value="4" th:if="${order.statusId == 3}">Hoàn tất</option>
+                                                <option value="5">Hủy</option>
+                                            </select>
+                                            <button class="btn btn-outline-primary" type="submit"><i class="fas fa-check"></i></button>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a th:href="@{/employee/orders/{id}(id=${order.orderId})}" class="btn btn-light btn-sm btn-action text-primary">
+                                        <i class="fas fa-eye"></i> Xem
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

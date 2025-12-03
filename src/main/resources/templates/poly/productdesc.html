@@ -3,248 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết sản phẩm</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
-	<link rel="stylesheet" href="/header.css">
-		<link rel="stylesheet" href="/footer.css">
+    <title th:text="${product.name} + ' - Poly Shop'">Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .product-detail-container {
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-wrapper {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
+            padding: 0 20px;
         }
-        
-        .product-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .product-header h1 {
-            color: #333;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .product-content {
+
+        /* --- Product Section --- */
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            align-items: start;
+            grid-template-columns: 450px 1fr;
+            gap: 0;
+            margin-bottom: 40px;
         }
-        
-        .product-image {
-            text-align: center;
-        }
-        
-        .product-image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .product-info {
+
+        .product-image-col {
+            background: #fff;
             padding: 20px;
-        }
-        
-        .product-info h2 {
-            color: #333;
-            font-size: 2em;
-            margin-bottom: 15px;
-        }
-        
-        .product-price {
-            font-size: 1.8em;
-            color: #e74c3c;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        
-        .product-description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-        }
-        
-        .product-rating {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            justify-content: center;
+            border-right: 1px solid #f0f0f0;
         }
-        
-        .stars {
-            color: #f39c12;
-            font-size: 1.5em;
-            margin-right: 10px;
+
+        .product-image-col img {
+            max-width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            transition: transform 0.3s;
         }
-        
-        .rating-number {
-            color: #666;
-            font-size: 1.1em;
+
+        .product-image-col img:hover {
+            transform: scale(1.05);
         }
-        
-        .back-button {
+
+        .product-info-col {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-tag {
             display: inline-block;
-            background: #3498db;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 5px;
+            background: #eef2ff;
+            color: #667eea;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .product-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .stars-display {
+            color: #fbbf24;
+            font-size: 1.1rem;
+        }
+
+        .price-tag {
+            font-size: 2rem;
             font-weight: bold;
+            color: #e53e3e;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .description-box {
+            color: #718096;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        .stock-status {
+            margin-bottom: 25px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .stock-in { background: #f0fff4; color: #38a169; border: 1px solid #c6f6d5; }
+        .stock-low { background: #fffaf0; color: #dd6b20; border: 1px solid #fbd38d; }
+        .stock-out { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .btn-action {
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-cart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-cart:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cart:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .btn-back {
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-back:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        /* --- Reviews Section --- */
+        .review-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Write Review Form */
+        .review-form-card {
+            background: #f8faff;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .rating-select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+            background: white;
+            min-width: 200px;
+            font-size: 1rem;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e0;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .btn-submit-review {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
             transition: background 0.3s;
         }
-        
-        .back-button:hover {
-            background: #2980b9;
+
+        .btn-submit-review:hover {
+            background: #00f2fe;
         }
-        
-        @media (max-width: 768px) {
-            .product-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .product-header h1 {
-                font-size: 2em;
-            }
-            
-            .product-info h2 {
-                font-size: 1.5em;
-            }
+
+        /* Review List */
+        .review-item {
+            display: flex;
+            gap: 20px;
+            padding: 25px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .reviewer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .review-content {
+            flex: 1;
+        }
+
+        .reviewer-name {
+            font-weight: 700;
+            color: #2d3748;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .review-meta {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-text {
+            color: #4a5568;
+            line-height: 1.6;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 0 15px 15px 15px;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        @media (max-width: 900px) {
+            .product-card { grid-template-columns: 1fr; }
+            .product-image-col { border-right: none; border-bottom: 1px solid #f0f0f0; }
+            .product-info-col { padding: 25px; }
         }
     </style>
 </head>
 <body>
 
-	<div th:replace="poly/fragments/header :: header"></div>
-    
-    <div class="product-detail-container">
-        <div class="product-header">
-            <h1>Thông tin sản phẩm</h1>
-        </div>
-        
-        <!-- Success/Error Message -->
+    <div th:replace="poly/fragments/header :: header"></div>
+
+    <div class="main-wrapper">
         <div th:if="${message}" 
-             th:style="${messageType == 'success'} ? 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;' : 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;'"
-             style="padding: 1rem; margin-bottom: 2rem; border-radius: 5px; text-align: center; font-weight: bold;" 
-             th:text="${message}"></div>
-        
-        <div class="product-image d-flex justify-content-center align-items-center border rounded bg-white" style="width:400px;height:400px;overflow:hidden;">
-		    <img th:src="${product.imageUrl}" th:alt="${product.name}" style="width:100%;height:100%;object-fit:contain;">
-		</div>
-            
-            <div class="product-info">
-                <h2 th:text="${product.name}">Tên sản phẩm</h2>
-                <div class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
-                    Giá sản phẩm
+             th:class="${messageType == 'success'} ? 'alert alert-success' : 'alert alert-error'">
+             <i th:class="${messageType == 'success'} ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+             <span th:text="${message}"></span>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image-col">
+                <img th:src="${product.imageUrl}" th:alt="${product.name}" 
+                     onerror="this.src='https://via.placeholder.com/400x400?text=No+Image'">
+            </div>
+
+            <div class="product-info-col">
+                <div class="category-tag">
+                    <i class="fas fa-tag"></i> <span th:text="${product.category != null ? product.category.name : 'Sản phẩm'}">Category</span>
                 </div>
-                
-                <div class="product-description" th:text="${product.description}">
-                    Mô tả sản phẩm
-                </div>
-                
-                <div class="product-rating">
-                    <div class="stars">
+
+                <h1 class="product-title" th:text="${product.name}">Tên sản phẩm</h1>
+
+                <div class="rating-summary">
+                    <div class="stars-display">
                         <span th:each="i : ${#numbers.sequence(1, 5)}">
-                            <span th:if="${i <= product.rating}">★</span>
-                            <span th:if="${i > product.rating}">☆</span>
+                            <i class="fas fa-star" th:if="${i <= product.rating}"></i>
+                            <i class="far fa-star" th:if="${i > product.rating}"></i>
                         </span>
                     </div>
-                    <span class="rating-number" th:text="${product.rating} + '/5'">Đánh giá</span>
+                    <span class="text-muted">(<span th:text="${product.rating}">4.5</span>/5)</span>
                 </div>
-                
-                <!-- Stock Status -->
-                <div style="margin: 1rem 0; padding: 10px; border-radius: 5px;" 
-                     th:style="${product.quantity > 10} ? 'background: #d4edda; color: #155724; border: 1px solid #c3e6cb;' : (${product.quantity > 0} ? 'background: #fff3cd; color: #856404; border: 1px solid #ffeaa7;' : 'background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;')">
-                    <span th:if="${product.quantity > 10}">✅ Còn hàng</span>
-                    <span th:if="${product.quantity > 0 && product.quantity <= 10}">⚠️ Chỉ còn <strong th:text="${product.quantity}"></strong> sản phẩm</span>
-                    <span th:if="${product.quantity <= 0}">❌ Hết hàng</span>
+
+                <div class="price-tag">
+                    <span th:text="${#numbers.formatDecimal(product.getDiscountedPrice(), 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                        500,000 ₫
+                    </span>
+                    <span th:if="${product.promotion != null}" 
+                          style="font-size: 1.2rem; text-decoration: line-through; color: #a0aec0; font-weight: normal;">
+                        <span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></span>
+                    </span>
                 </div>
-                
-                <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
-                    <a href="/home" class="back-button">← Quay lại trang chủ</a>
-                    
-                    <form method="POST" action="/cart/add" style="display: inline;">
+
+                <div class="description-box" th:text="${product.description}">
+                    Mô tả chi tiết sản phẩm...
+                </div>
+
+                <div th:class="'stock-status ' + (${product.quantity > 10} ? 'stock-in' : (${product.quantity > 0} ? 'stock-low' : 'stock-out'))">
+                    <i th:class="${product.quantity > 0} ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
+                    <span th:if="${product.quantity > 10}">Còn hàng (Sẵn sàng giao)</span>
+                    <span th:if="${product.quantity > 0 && product.quantity <= 10}">Sắp hết hàng (Còn <span th:text="${product.quantity}"></span>)</span>
+                    <span th:if="${product.quantity <= 0}">Tạm hết hàng</span>
+                </div>
+
+                <div class="action-buttons">
+                    <a href="/home" class="btn-action btn-back">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+
+                    <form method="POST" action="/cart/add" style="flex: 1; display: flex;">
                         <input type="hidden" name="productId" th:value="${product.productId}">
                         <input type="hidden" name="quantity" value="1">
                         <input type="hidden" name="from" value="product">
-                        <button type="submit" 
-                                th:disabled="${product.quantity <= 0}"
-                                th:style="${product.quantity <= 0} ? 'background: #ccc; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-weight: bold; cursor: not-allowed; font-size: 1rem; opacity: 0.6;' : 'background: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.3s;'"
-                                onmouseover="if(!this.disabled) this.style.background='#218838'" 
-                                onmouseout="if(!this.disabled) this.style.background='#28a745'">
-                            <span th:if="${product.quantity <= 0}">❌ Hết hàng</span>
-                            <span th:if="${product.quantity > 0}">🛒 Thêm vào giỏ hàng</span>
+                        
+                        <button type="submit" class="btn-action btn-cart" th:disabled="${product.quantity <= 0}">
+                            <i class="fas fa-cart-plus"></i> 
+                            <span th:text="${product.quantity > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng'}">Thêm vào giỏ hàng</span>
                         </button>
                     </form>
-                </div>
-            </div>
-            
-            <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
-            <h3 style="margin-bottom: 20px; color: #333;">Đánh giá sản phẩm</h3>
-            
-            <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-                <div th:if="${session.account != null}">
-                    <form action="/product/review" method="post">
-                        <input type="hidden" name="productId" th:value="${product.productId}">
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Đánh giá của bạn:</label>
-                            <select name="rating" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; min-width: 150px;">
-                                <option value="5">⭐⭐⭐⭐⭐ (Tuyệt vời)</option>
-                                <option value="4">⭐⭐⭐⭐ (Tốt)</option>
-                                <option value="3">⭐⭐⭐ (Bình thường)</option>
-                                <option value="2">⭐⭐ (Tệ)</option>
-                                <option value="1">⭐ (Rất tệ)</option>
-                            </select>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Nhận xét:</label>
-                            <textarea name="content" rows="3" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..." required
-                                      style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
-                        </div>
-                        
-                        <button type="submit" 
-                                style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                            Gửi đánh giá
-                        </button>
-                    </form>
-                </div>
-                
-                <div th:unless="${session.account != null}" style="text-align: center;">
-                    <p>Vui lòng <a href="/account/login" style="color: #3498db; font-weight: bold;">đăng nhập</a> để viết đánh giá.</p>
-                </div>
-            </div>
-
-            <div class="reviews-list">
-                <h4 style="margin-bottom: 15px; color: #555;">Các đánh giá gần đây (<span th:text="${reviews.size()}">0</span>)</h4>
-                
-                <div th:if="${reviews.empty}" style="color: #777; font-style: italic;">
-                    Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!
-                </div>
-                
-                <div th:each="review : ${reviews}" style="border-bottom: 1px solid #f0f0f0; padding: 15px 0;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <strong style="color: #333;">
-                            <i class="fas fa-user-circle"></i> 
-                            <span th:text="${review.account != null ? review.account.fullName : 'Người dùng ẩn danh'}">Tên user</span>
-                        </strong>
-                        <small style="color: #888;" th:text="${#temporals.format(review.reviewDate, 'dd/MM/yyyy HH:mm')}">Thời gian</small>
-                    </div>
-                    
-                    <div style="color: #f39c12; margin-bottom: 8px; font-size: 0.9em;">
-                        <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span><span th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" style="color: #ddd;">★</span>
-                    </div>
-                    
-                    <p th:text="${review.content}" style="margin: 0; color: #555; line-height: 1.5;">Nội dung review</p>
                 </div>
             </div>
         </div>
-        </div> <div th:replace="poly/fragments/footer :: footer"></div>
+
+        <div class="review-section">
+            <div class="section-header">
+                <span><i class="fas fa-comments text-primary"></i> Đánh giá từ khách hàng</span>
+                <span style="font-size: 1rem; font-weight: normal; color: #718096;">
+                    <span th:text="${reviews.size()}">0</span> đánh giá
+                </span>
+            </div>
+
+            <div class="review-form-card" th:if="${session.account != null}">
+                <h4 style="margin-bottom: 15px;"><i class="fas fa-pen"></i> Viết đánh giá của bạn</h4>
+                <form action="/product/review" method="post">
+                    <input type="hidden" name="productId" th:value="${product.productId}">
+                    
+                    <div class="form-row">
+                        <label class="form-label">Mức độ hài lòng:</label>
+                        <select name="rating" class="rating-select">
+                            <option value="5">⭐⭐⭐⭐⭐ - Tuyệt vời</option>
+                            <option value="4">⭐⭐⭐⭐ - Hài lòng</option>
+                            <option value="3">⭐⭐⭐ - Bình thường</option>
+                            <option value="2">⭐⭐ - Không hài lòng</option>
+                            <option value="1">⭐ - Tệ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label class="form-label">Nhận xét:</label>
+                        <textarea name="content" class="comment-input" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit-review">Gửi đánh giá</button>
+                </form>
+            </div>
+
+            <div th:unless="${session.account != null}" class="alert" style="background: #eef2ff; color: #4c51bf;">
+                <i class="fas fa-sign-in-alt"></i> Vui lòng <a href="/account/login" style="font-weight: bold; text-decoration: underline;">đăng nhập</a> để viết đánh giá.
+            </div>
+
+            <div class="reviews-list">
+                <div th:if="${reviews.empty}" style="text-align: center; padding: 40px; color: #a0aec0;">
+                    <i class="far fa-comment-dots" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p>Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
+                </div>
+
+                <div th:each="review : ${reviews}" class="review-item">
+                    <img th:src="@{'/avatars/user_' + ${review.account.accountId} + '.jpg'}" 
+                         onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"
+                         class="reviewer-avatar" alt="User Avatar">
+                    
+                    <div class="review-content">
+                        <div class="reviewer-name" th:text="${review.account.fullName}">Người dùng</div>
+                        
+                        <div class="review-meta">
+                            <div style="color: #fbbf24;">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:if="${i <= review.rating}"></i>
+                                    <i class="far fa-star" th:if="${i > review.rating}"></i>
+                                </span>
+                            </div>
+                            <span>•</span>
+                            <span th:text="${#temporals.format(review.reviewDate, 'dd/MM/yyyy HH:mm')}">Time</span>
+                        </div>
+                        
+                        <div class="review-text" th:text="${review.content}">
+                            Nội dung đánh giá...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="poly/fragments/footer :: footer"></div>
+
 </body>
 </html>

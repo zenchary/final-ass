@@ -1,180 +1,457 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thanh Toán - Poly Shop</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - Poly Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .steps-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+        }
+        .step { opacity: 0.6; }
+        .step.active { opacity: 1; color: #667eea; font-weight: 600; }
+        .step i { margin-right: 5px; }
+
+        /* Cards */
+        .checkout-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid #f0f0f0;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .card-header-custom {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f7fafc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-control[readonly] {
+            background-color: #f8fafc;
+            color: #718096;
+        }
+
+        /* Payment Methods */
+        .payment-option {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-option:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .form-check-input:checked + .form-check-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .payment-option:has(.form-check-input:checked) {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .form-check-input {
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Order Summary (Right Column) */
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 25px;
+            border: 1px solid #f0f0f0;
+            position: sticky;
+            top: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            color: #4a5568;
+        }
+
+        .product-mini-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .product-mini-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-mini-name {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .product-mini-qty {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .summary-total-row {
+            border-top: 2px solid #f0f0f0;
+            padding-top: 15px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .total-amount {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #e53e3e;
+        }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-back-cart {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #718096;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .btn-back-cart:hover { color: #2d3748; text-decoration: underline; }
+
+        /* Voucher Input */
+        .voucher-box {
+            background: #f8faff;
+            border: 1px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group-text {
+            background: white;
+            border-left: none;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        /* Alert */
+        .alert {
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
 </head>
 <body>
-	<div class="container my-5">
-		<h2 class="mb-4">
-			<i class="fas fa-shopping-bag"></i> Thanh Toán
-		</h2>
 
-		<!-- Flash Messages -->
-		<div th:if="${message}"
-			th:class="'alert alert-' + ${messageType == 'success' ? 'success' : 'danger'} + ' alert-dismissible fade show'"
-			role="alert">
-			<span th:text="${message}"></span>
-			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-		</div>
+    <div th:replace="poly/fragments/header :: header"></div>
 
-		<div class="row">
-			<!-- Order Summary -->
-			<div class="col-md-4 order-md-2 mb-4">
-        <h4 class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-primary">Đơn hàng của bạn</span>
-            <span class="badge bg-primary rounded-pill" th:text="${cartItems.size()}">0</span>
-        </h4>
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">Thanh toán đơn hàng</h1>
+            <div class="steps-indicator">
+                <span class="step"><i class="fas fa-shopping-cart"></i> Giỏ hàng</span>
+                <span class="step"><i class="fas fa-chevron-right"></i></span>
+                <span class="step active"><i class="fas fa-credit-card"></i> Thanh toán</span>
+                <span class="step"><i class="fas fa-chevron-right"></i></span>
+                <span class="step"><i class="fas fa-check-circle"></i> Hoàn tất</span>
+            </div>
+        </div>
 
-        <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between lh-sm"
-                th:each="item : ${cartItems}">
-                <div>
-                    <h6 class="my-0" th:text="${item.product.name}">Product name</h6>
-                    <small class="text-muted"
-                           th:text="'Số lượng: ' + ${item.quantity}">Quantity</small>
+        <div th:if="${message}" 
+             th:class="'alert alert-' + ${messageType == 'success' ? 'success' : 'error'}">
+             <span th:text="${message}"></span>
+        </div>
+
+        <form th:action="@{/cart/checkout}" method="post" class="needs-validation" novalidate>
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="checkout-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-map-marker-alt text-primary"></i> Thông tin giao hàng
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="fullName" class="form-label">Họ và tên người nhận</label>
+                                <input type="text" class="form-control" id="fullName" 
+                                       th:value="${account != null ? account.fullName : ''}" readonly>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       th:value="${account != null ? account.phone : ''}" 
+                                       placeholder="Nhập số điện thoại nhận hàng"
+                                       pattern="[0-9]{10,11}" required>
+                                <div class="invalid-feedback">Vui lòng nhập số điện thoại hợp lệ.</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email xác nhận</label>
+                                <input type="email" class="form-control" id="email" 
+                                       th:value="${account != null ? account.email : ''}" readonly>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="shippingAddress" class="form-label">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="shippingAddress" name="shippingAddress" rows="3" 
+                                          placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                                          required th:text="${account != null ? account.address : ''}"></textarea>
+                                <div class="invalid-feedback">Vui lòng nhập địa chỉ giao hàng.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="note" class="form-label">Ghi chú đơn hàng (Tùy chọn)</label>
+                                <textarea class="form-control" id="note" name="note" rows="2" 
+                                          placeholder="Ví dụ: Giao hàng giờ hành chính, gọi trước khi giao..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checkout-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-wallet text-primary"></i> Phương thức thanh toán
+                        </div>
+                        
+                        <div class="payment-methods">
+                            <div class="payment-option">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="COD" checked>
+                                <label class="form-check-label" for="cod">
+                                    <i class="fas fa-money-bill-wave text-success"></i> Thanh toán khi nhận hàng (COD)
+                                </label>
+                            </div>
+                            
+                            <div class="payment-option" style="opacity: 0.6;">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="banking" value="BANKING" disabled>
+                                <label class="form-check-label" for="banking">
+                                    <i class="fas fa-university text-primary"></i> Chuyển khoản ngân hàng (Đang bảo trì)
+                                </label>
+                            </div>
+                            
+                            <div class="payment-option" style="opacity: 0.6;">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="momo" value="MOMO" disabled>
+                                <label class="form-check-label" for="momo">
+                                    <i class="fas fa-qrcode text-danger"></i> Ví MoMo (Sắp ra mắt)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <span class="text-muted"
-                      th:text="${#numbers.formatDecimal(item.product.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">Price</span>
-            </li>
 
-            <li class="list-group-item d-flex justify-content-between">
-                <span><strong>Tổng tạm tính</strong></span>
-                <strong id="subtotal"
-                        th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
-            </li>
+                <div class="col-lg-5">
+                    <div class="summary-card">
+                        <div class="card-header-custom">
+                            <i class="fas fa-shopping-bag text-primary"></i> Đơn hàng (<span th:text="${cartItems.size()}">0</span> sản phẩm)
+                        </div>
 
-            <li id="discountRow" class="list-group-item d-flex justify-content-between text-success d-none">
-                <span>Giảm giá (<span id="voucherCodeText"></span>)</span>
-                <strong id="discountValue">- 0 ₫</strong>
-            </li>
+                        <div class="product-list mb-3" style="max-height: 300px; overflow-y: auto;">
+                            <div th:each="item : ${cartItems}" class="product-mini-item">
+                                <div style="flex: 1;">
+                                    <span class="product-mini-name" th:text="${item.product.name}">Product Name</span>
+                                    <span class="product-mini-qty">x <span th:text="${item.quantity}">1</span></span>
+                                </div>
+                                <div style="font-weight: 600; color: #4a5568;">
+                                    <span th:text="${#numbers.formatDecimal(item.product.getDiscountedPrice() * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                                </div>
+                            </div>
+                        </div>
 
-            <li id="totalRow" class="list-group-item d-flex justify-content-between fw-bold">
-                <span>Tổng sau giảm</span>
-                <strong id="totalAfter"
-                        th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
-            </li>
-        </ul>
+                        <div class="voucher-box">
+                            <label class="form-label text-muted"><small>Mã giảm giá</small></label>
+                            <div class="input-group">
+                                <input type="text" id="voucherCode" class="form-control" placeholder="Nhập mã voucher">
+                                <button class="btn btn-outline-primary" type="button" id="applyVoucherBtn">Áp dụng</button>
+                            </div>
+                            <div id="voucherMessage" class="mt-2 small"></div>
+                        </div>
+
+                        <div class="summary-item">
+                            <span>Tạm tính</span>
+                            <span th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Phí vận chuyển</span>
+                            <span class="text-success">Miễn phí</span>
+                        </div>
+                        <div id="discountRow" class="summary-item text-success d-none">
+                            <span>Giảm giá (<span id="voucherCodeText"></span>)</span>
+                            <strong id="discountValue">- 0 ₫</strong>
+                        </div>
+
+                        <div class="summary-total-row">
+                            <span class="total-label">Tổng cộng</span>
+                            <span class="total-amount" id="totalAfter" 
+                                  th:text="${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                        </div>
+
+                        <button type="submit" class="btn-checkout">
+                            ĐẶT HÀNG NGAY
+                        </button>
+                        
+                        <a href="/cart" class="btn-back-cart">
+                            <i class="fas fa-arrow-left"></i> Quay lại giỏ hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 
-			<!-- Checkout Form -->
-			<div class="col-md-8 order-md-1">
-				<h4 class="mb-3">Thông tin giao hàng</h4>
+    <div th:replace="poly/fragments/footer :: footer"></div>
 
-				<form th:action="@{/cart/checkout}" method="post"
-					class="needs-validation" novalidate>
-					<div class="row g-3">
-						<div class="col-12">
-							<label for="fullName" class="form-label">Họ và tên</label> <input
-								type="text" class="form-control" id="fullName"
-								th:value="${account != null ? account.fullName : ''}" readonly>
-						</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form Validation
+        (function() {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
 
-						<div class="col-12">
-							<label for="phone" class="form-label">Số điện thoại <span
-								class="text-danger">*</span></label> <input type="tel"
-								class="form-control" id="phone" name="phone"
-								th:value="${account != null ? account.phone : ''}"
-								pattern="[0-9]{10,11}" required>
-							<div class="invalid-feedback">Vui lòng nhập số điện thoại
-								hợp lệ (10-11 số).</div>
-						</div>
-
-						<div class="col-12">
-							<label for="shippingAddress" class="form-label">Địa chỉ
-								giao hàng <span class="text-danger">*</span>
-							</label>
-							<textarea class="form-control" id="shippingAddress"
-								name="shippingAddress" rows="3" required
-								th:text="${account != null ? account.address : ''}"></textarea>
-							<div class="invalid-feedback">Vui lòng nhập địa chỉ giao
-								hàng.</div>
-						</div>
-
-						<div class="col-12">
-							<label for="note" class="form-label">Ghi chú đơn hàng
-								(Tùy chọn)</label>
-							<textarea class="form-control" id="note" name="note" rows="2"
-								placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn"></textarea>
-						</div>
-					</div>
-
-					<hr class="my-4">
-
-					<h4 class="mb-3">Phương thức thanh toán</h4>
-
-					<div class="my-3">
-						<div class="form-check">
-							<input id="cod" name="paymentMethod" type="radio"
-								class="form-check-input" checked required> <label
-								class="form-check-label" for="cod"> <i
-								class="fas fa-money-bill-wave"></i> Thanh toán khi nhận hàng
-								(COD)
-							</label>
-						</div>
-						<div class="form-check">
-							<input id="banking" name="paymentMethod" type="radio"
-								class="form-check-input" required disabled> <label
-								class="form-check-label text-muted" for="banking"> <i
-								class="fas fa-university"></i> Chuyển khoản ngân hàng (Sắp ra
-								mắt)
-							</label>
-						</div>
-					</div>
-
-
-
-					<hr class="my-4">
-
-					<h4 class="mb-3">Mã giảm giá</h4>
-            <div class="input-group mb-3">
-    <input type="text" id="voucherCode" class="form-control" placeholder="Nhập mã giảm giá (nếu có)">
-    <button id="applyVoucherBtn" class="btn btn-outline-primary" type="button">
-        <i class="fas fa-ticket-alt"></i> Áp dụng
-    </button>
-</div>
-
-<div id="voucherMessage" class="text-success"></div>
-<div id="voucherError" class="text-danger"></div>
-
-					<hr class="my-4">
-
-					<div class="d-grid gap-2">
-						<button class="btn btn-primary btn-lg" type="submit">
-							<i class="fas fa-check-circle"></i> Đặt hàng
-						</button>
-						<a th:href="@{/cart}" class="btn btn-outline-secondary"> <i
-							class="fas fa-arrow-left"></i> Quay lại giỏ hàng
-						</a>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-	<script>
-		// Form validation
-		(function() {
-			'use strict';
-			var forms = document.querySelectorAll('.needs-validation');
-			Array.prototype.slice.call(forms).forEach(function(form) {
-				form.addEventListener('submit', function(event) {
-					if (!form.checkValidity()) {
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					form.classList.add('was-validated');
-				}, false);
-			});
-		})();
-	</script>
+        // (Optional) Voucher Logic Placeholder - Bạn có thể thêm logic JS xử lý voucher ở đây nếu cần
+        const applyBtn = document.getElementById('applyVoucherBtn');
+        if(applyBtn){
+            applyBtn.addEventListener('click', function(){
+                const code = document.getElementById('voucherCode').value;
+                const msg = document.getElementById('voucherMessage');
+                if(code.trim() === ""){
+                    msg.className = "mt-2 small text-danger";
+                    msg.innerText = "Vui lòng nhập mã giảm giá!";
+                } else {
+                    // Demo logic
+                    msg.className = "mt-2 small text-muted";
+                    msg.innerText = "Đang kiểm tra mã...";
+                    // Thực tế bạn sẽ gọi AJAX lên server để check mã
+                }
+            });
+        }
+    </script>
 </body>
 </html>

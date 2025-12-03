@@ -1,97 +1,101 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Quên mật khẩu</title>
-<link rel="stylesheet" href="/header.css">
-<link rel="stylesheet" href="/footer.css">
-<link rel="stylesheet" href="/style.css">
-<style> /* --- Giao diện khung chính --- */
-.forgot-container {
-	width: 420px;
-	margin: 80px auto;
-	background: linear-gradient(135deg, #667eea, #764ba2);
-	color: #fff;
-	border-radius: 12px;
-	padding: 25px 30px;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
-	text-align: center;
-} /* --- Tiêu đề --- */
-.forgot-container h2 {
-	margin-bottom: 20px;
-	font-size: 22px;
-	font-weight: bold;
-} /* --- Nhóm input --- */
-.form-group {
-	margin-bottom: 15px;
-	text-align: left;
-}
-
-.form-group label {
-	display: block;
-	margin-bottom: 6px;
-	font-weight: 500;
-}
-
-.form-group input {
-	width: 100%;
-	padding: 10px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-	font-size: 15px;
-	color: #333;
-} /* --- Nút gửi --- */
-.btn-submit {
-	width: 100%;
-	padding: 10px;
-	background: #007bff;
-	color: white;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	transition: 0.3s;
-	font-size: 16px;
-}
-
-.btn-submit:hover {
-	background: #0056b3;
-} /* --- Thông báo --- */
-.message {
-	margin-top: 15px;
-	font-size: 14px;
-	color: #ffeb3b;
-} /* --- Liên kết quay lại --- */
-.back-link {
-	display: inline-block;
-	margin-top: 20px;
-	color: #66b3ff;
-	text-decoration: none;
-	transition: 0.3s;
-}
-
-.back-link:hover {
-	color: #3399ff;
-	text-decoration: underline;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Quên mật khẩu - Poly Shop</title>
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+        .forgot-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        .icon-header {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; font-size: 0.95rem; }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .btn-submit:hover { transform: translateY(-2px); }
+        .message { margin-top: 15px; font-size: 0.9rem; padding: 10px; border-radius: 5px; }
+        .message.error { color: #e53e3e; background: #fff5f5; }
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
-	<div th:replace="poly/fragments/header :: header"></div>
-	<div class="forgot-container">
-		<h2>Quên mật khẩu</h2>
-		<p>Nhập email hoặc tên đăng nhập để nhận hướng dẫn đặt lại mật
-			khẩu.</p>
-		<form th:action="@{/account/forgot}" method="post">
-			<div class="form-group">
-				<label for="email">Email hoặc Tên đăng nhập</label> <input
-					type="text" id="email" name="email"
-					placeholder="Nhập email hoặc tên đăng nhập" required>
-			</div>
-			<button type="submit" class="btn-submit">Gửi yêu cầu</button>
-			<p th:if="${message}" th:text="${message}" class="message"></p>
-		</form>
-		<a href="/account/login" class="back-link">← Quay lại đăng nhập</a>
-	</div>
-	<div th:replace="poly/fragments/footer :: footer"></div>
+    <div th:replace="poly/fragments/header :: header"></div>
+
+    <div class="wrapper">
+        <div class="forgot-card">
+            <div class="icon-header"><i class="fas fa-question-circle"></i></div>
+            <h2>Quên mật khẩu?</h2>
+            <p>Đừng lo lắng! Nhập email hoặc tên đăng nhập của bạn và chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.</p>
+            
+            <form th:action="@{/account/forgot}" method="post">
+                <input type="text" class="form-control" name="email" 
+                       placeholder="Nhập Email hoặc Tên đăng nhập" required>
+                
+                <button type="submit" class="btn-submit">Gửi yêu cầu</button>
+                
+                <div th:if="${message}" class="message error" th:text="${message}"></div>
+            </form>
+            
+            <a href="/account/login" class="back-link">← Quay lại đăng nhập</a>
+        </div>
+    </div>
+
+    <div th:replace="poly/fragments/footer :: footer"></div>
 </body>
 </html>

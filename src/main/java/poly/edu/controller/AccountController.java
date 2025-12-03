@@ -5,6 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.*;
 import poly.edu.dao.AccountDAO;
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.io.IOException;
+import java.nio.file.*;
 
 @Controller
 @RequestMapping("/account")
@@ -307,5 +311,46 @@ public class AccountController {
 
         model.addAttribute("message", "✅ Đặt lại mật khẩu thành công! Vui lòng đăng nhập.");
         return "poly/taikhoan/login-register";
+    }
+    
+    @PostMapping("/upload-avatar")
+    public String uploadAvatar(@RequestParam("image") MultipartFile file, 
+                               RedirectAttributes redirectAttributes) {
+        if (!authService.isAuthenticated()) {
+            return "redirect:/account/login";
+        }
+        
+        poly.edu.model.Account user = authService.getAccount();
+        
+        if (file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "❌ Vui lòng chọn ảnh!");
+            return "redirect:/account";
+        }
+
+        try {
+            String fileName = "user_" + user.getAccountId() + ".jpg";
+            
+            // 1. Lưu vào thư mục SRC (để giữ file sau khi build lại)
+            Path srcPath = Paths.get("src/main/resources/static/avatars");
+            if (!Files.exists(srcPath)) Files.createDirectories(srcPath);
+            try (var inputStream = file.getInputStream()) {
+                Files.copy(inputStream, srcPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            // 2. Lưu vào thư mục TARGET (để hiển thị ngay lập tức mà không cần restart)
+            Path targetPath = Paths.get("target/classes/static/avatars");
+            if (!Files.exists(targetPath)) Files.createDirectories(targetPath);
+            try (var inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            }
+            
+            redirectAttributes.addFlashAttribute("message", "✅ Cập nhật ảnh đại diện thành công!");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "❌ Lỗi khi lưu ảnh: " + e.getMessage());
+        }
+        
+        return "redirect:/account";
     }
 }
