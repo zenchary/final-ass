@@ -59,6 +59,26 @@ public class AdminCategoryController {
                 categories = categoryRepository.findAllByOrderByNameAsc();
             }
             
+            // --- ĐOẠN CODE MỚI THÊM ĐỂ TÍNH TOÁN THỐNG KÊ ---
+            int totalProducts = 0;
+            int activeCategories = 0;
+            
+            if (categories != null) {
+                for (Category cat : categories) {
+                    if (cat.getProducts() != null) {
+                        int size = cat.getProducts().size();
+                        totalProducts += size;
+                        if (size > 0) {
+                            activeCategories++;
+                        }
+                    }
+                }
+            }
+            
+            model.addAttribute("totalProducts", totalProducts);
+            model.addAttribute("activeCategories", activeCategories);
+            // ------------------------------------------------
+            
             model.addAttribute("categories", categories);
             model.addAttribute("search", search);
             
@@ -72,9 +92,11 @@ public class AdminCategoryController {
         }
     }
 
+    // ... (Giữ nguyên các method khác: add, save, edit, update, delete) ...
+    // Copy lại toàn bộ các method khác bên dưới y nguyên như cũ
+    
     /**
      * Hiển thị form thêm loại sản phẩm mới
-     * URL: /admin/categories/add
      */
     @GetMapping("/categories/add")
     public String showAddForm(Model model, RedirectAttributes redirectAttributes) {
@@ -89,7 +111,6 @@ public class AdminCategoryController {
 
     /**
      * Xử lý thêm loại sản phẩm mới
-     * URL: POST /admin/categories/save
      */
     @PostMapping("/categories/save")
     public String addCategory(@ModelAttribute("category") Category category,
@@ -102,7 +123,6 @@ public class AdminCategoryController {
         }
 
         try {
-            // Kiểm tra tên loại đã tồn tại
             Optional<Category> existingCategory = categoryRepository.findByName(category.getName());
             if (existingCategory.isPresent()) {
                 model.addAttribute("message", "❌ Tên loại sản phẩm đã tồn tại!");
@@ -111,9 +131,7 @@ public class AdminCategoryController {
                 return "poly/category/categories_add";
             }
 
-            // Set thời gian tạo
             category.setCreatedAt(LocalDateTime.now());
-            
             categoryRepository.save(category);
 
             redirectAttributes.addFlashAttribute("message", "✅ Thêm loại sản phẩm thành công!");
@@ -129,10 +147,6 @@ public class AdminCategoryController {
         }
     }
 
-    /**
-     * Hiển thị form chỉnh sửa loại sản phẩm
-     * URL: /admin/categories/edit/{id}
-     */
     @GetMapping("/categories/edit/{id}")
     public String showEditForm(@PathVariable("id") int id, 
                               Model model, 
@@ -145,16 +159,13 @@ public class AdminCategoryController {
 
         try {
             Optional<Category> category = categoryRepository.findById(id);
-            
             if (category.isEmpty()) {
                 redirectAttributes.addFlashAttribute("message", "❌ Không tìm thấy loại sản phẩm!");
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/admin/categories";
             }
-
             model.addAttribute("category", category.get());
             return "poly/category/categories_edit";
-            
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", "❌ Có lỗi xảy ra: " + e.getMessage());
@@ -163,10 +174,6 @@ public class AdminCategoryController {
         }
     }
 
-    /**
-     * Xử lý cập nhật loại sản phẩm
-     * URL: POST /admin/categories/update/{id}
-     */
     @PostMapping("/categories/update/{id}")
     public String updateCategory(@PathVariable("id") int id,
                                 @ModelAttribute("category") Category formCategory,
@@ -180,7 +187,6 @@ public class AdminCategoryController {
 
         try {
             Optional<Category> existingOpt = categoryRepository.findById(id);
-            
             if (existingOpt.isEmpty()) {
                 redirectAttributes.addFlashAttribute("message", "❌ Không tìm thấy loại sản phẩm!");
                 redirectAttributes.addFlashAttribute("messageType", "error");
@@ -188,8 +194,6 @@ public class AdminCategoryController {
             }
 
             Category existing = existingOpt.get();
-
-            // Kiểm tra tên trùng với loại khác
             Optional<Category> nameCheck = categoryRepository.findByName(formCategory.getName());
             if (nameCheck.isPresent() && nameCheck.get().getCategoryId() != id) {
                 model.addAttribute("message", "❌ Tên loại sản phẩm đã tồn tại!");
@@ -198,10 +202,8 @@ public class AdminCategoryController {
                 return "poly/category/categories_edit";
             }
 
-            // Cập nhật thông tin
             existing.setName(formCategory.getName());
             existing.setDescription(formCategory.getDescription());
-
             categoryRepository.save(existing);
 
             redirectAttributes.addFlashAttribute("message", "✅ Cập nhật loại sản phẩm thành công!");
@@ -217,10 +219,6 @@ public class AdminCategoryController {
         }
     }
 
-    /**
-     * Xóa loại sản phẩm
-     * URL: POST /admin/categories/delete/{id}
-     */
     @PostMapping("/categories/delete/{id}")
     public String deleteCategory(@PathVariable("id") int id, 
                                 RedirectAttributes redirectAttributes) {
@@ -232,7 +230,6 @@ public class AdminCategoryController {
 
         try {
             Optional<Category> category = categoryRepository.findById(id);
-            
             if (category.isEmpty()) {
                 redirectAttributes.addFlashAttribute("message", "❌ Không tìm thấy loại sản phẩm!");
                 redirectAttributes.addFlashAttribute("messageType", "error");
@@ -240,8 +237,6 @@ public class AdminCategoryController {
             }
 
             Category cat = category.get();
-            
-            // Kiểm tra xem loại có sản phẩm không
             if (cat.getProducts() != null && !cat.getProducts().isEmpty()) {
                 redirectAttributes.addFlashAttribute("message", "❌ Không thể xóa loại sản phẩm này vì còn " + cat.getProducts().size() + " sản phẩm!");
                 redirectAttributes.addFlashAttribute("messageType", "error");
@@ -249,7 +244,6 @@ public class AdminCategoryController {
             }
 
             categoryRepository.delete(cat);
-
             redirectAttributes.addFlashAttribute("message", "✅ Xóa loại sản phẩm thành công!");
             redirectAttributes.addFlashAttribute("messageType", "success");
 
