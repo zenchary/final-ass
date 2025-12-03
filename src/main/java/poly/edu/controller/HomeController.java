@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping; 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
 
 import poly.edu.model.Account;
 import poly.edu.model.Category;
@@ -19,6 +21,8 @@ import poly.edu.repository.CartRepository;
 import poly.edu.repository.CategoryRepository;
 import poly.edu.service.CategoryService;
 import poly.edu.service.ProductService;
+import poly.edu.model.Review;          
+import poly.edu.service.ReviewService; 
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +36,9 @@ public class HomeController {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-
+	@Autowired
+    private ReviewService reviewService;
+	
 	/**
 	* Helper method để thêm attributes chung cho navbar
 	*/
@@ -133,7 +139,7 @@ public class HomeController {
 
     
     /**
-     * Chi tiết sản phẩm
+     * Chi tiết sản phẩm (Đã cập nhật để lấy review)
      */
     @GetMapping("/product/{id}")
     public String productDetail(@PathVariable Integer id, 
@@ -143,6 +149,11 @@ public class HomeController {
         if (productOpt.isPresent()) {
             Product product = productOpt.get();
             
+            // --- CODE THÊM MỚI: Lấy danh sách review ---
+            List<Review> reviews = reviewService.getReviewsByProduct(id);
+            model.addAttribute("reviews", reviews);
+            // -------------------------------------------
+
             List<Category> categories = categoryService.getCategoriesWithProducts();
             model.addAttribute("categories", categories);
             model.addAttribute("product", product);
@@ -154,6 +165,36 @@ public class HomeController {
             return "poly/under-construction";
         }
     }
+
+    /**
+     * Xử lý gửi đánh giá (Mới thêm)
+     */
+    @PostMapping("/product/review")
+    public String submitReview(@RequestParam Integer productId,
+                               @RequestParam String content,
+                               @RequestParam Integer rating,
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session) {
+        
+        Account account = (Account) session.getAttribute("account");
+        if (account == null) {
+            redirectAttributes.addFlashAttribute("message", "❌ Vui lòng đăng nhập để đánh giá!");
+            return "redirect:/account/login";
+        }
+
+        try {
+            reviewService.addReview(account.getAccountId(), productId, content, rating);
+            redirectAttributes.addFlashAttribute("message", "✅ Cảm ơn bạn đã đánh giá!");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", "❌ Lỗi khi gửi đánh giá.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+        }
+
+        return "redirect:/product/" + productId;
+    }
+
 
     /**
      * Xem sản phẩm theo category

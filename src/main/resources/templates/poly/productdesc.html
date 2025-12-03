@@ -183,9 +183,68 @@
                     </form>
                 </div>
             </div>
-        </div>
-    </div>
+            
+            <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+            <h3 style="margin-bottom: 20px; color: #333;">Đánh giá sản phẩm</h3>
+            
+            <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <div th:if="${session.account != null}">
+                    <form action="/product/review" method="post">
+                        <input type="hidden" name="productId" th:value="${product.productId}">
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Đánh giá của bạn:</label>
+                            <select name="rating" style="padding: 8px; border-radius: 5px; border: 1px solid #ddd; min-width: 150px;">
+                                <option value="5">⭐⭐⭐⭐⭐ (Tuyệt vời)</option>
+                                <option value="4">⭐⭐⭐⭐ (Tốt)</option>
+                                <option value="3">⭐⭐⭐ (Bình thường)</option>
+                                <option value="2">⭐⭐ (Tệ)</option>
+                                <option value="1">⭐ (Rất tệ)</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-weight: bold; margin-bottom: 5px; display: block;">Nhận xét:</label>
+                            <textarea name="content" rows="3" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..." required
+                                      style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;"></textarea>
+                        </div>
+                        
+                        <button type="submit" 
+                                style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                            Gửi đánh giá
+                        </button>
+                    </form>
+                </div>
+                
+                <div th:unless="${session.account != null}" style="text-align: center;">
+                    <p>Vui lòng <a href="/account/login" style="color: #3498db; font-weight: bold;">đăng nhập</a> để viết đánh giá.</p>
+                </div>
+            </div>
 
-	<div th:replace="poly/fragments/footer :: footer"></div>
+            <div class="reviews-list">
+                <h4 style="margin-bottom: 15px; color: #555;">Các đánh giá gần đây (<span th:text="${reviews.size()}">0</span>)</h4>
+                
+                <div th:if="${reviews.empty}" style="color: #777; font-style: italic;">
+                    Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!
+                </div>
+                
+                <div th:each="review : ${reviews}" style="border-bottom: 1px solid #f0f0f0; padding: 15px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <strong style="color: #333;">
+                            <i class="fas fa-user-circle"></i> 
+                            <span th:text="${review.account != null ? review.account.fullName : 'Người dùng ẩn danh'}">Tên user</span>
+                        </strong>
+                        <small style="color: #888;" th:text="${#temporals.format(review.reviewDate, 'dd/MM/yyyy HH:mm')}">Thời gian</small>
+                    </div>
+                    
+                    <div style="color: #f39c12; margin-bottom: 8px; font-size: 0.9em;">
+                        <span th:each="i : ${#numbers.sequence(1, review.rating)}">★</span><span th:if="${review.rating < 5}" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" style="color: #ddd;">★</span>
+                    </div>
+                    
+                    <p th:text="${review.content}" style="margin: 0; color: #555; line-height: 1.5;">Nội dung review</p>
+                </div>
+            </div>
+        </div>
+        </div> <div th:replace="poly/fragments/footer :: footer"></div>
 </body>
 </html>
