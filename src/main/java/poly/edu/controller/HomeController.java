@@ -23,6 +23,7 @@ import poly.edu.service.CategoryService;
 import poly.edu.service.ProductService;
 import poly.edu.model.Review;          
 import poly.edu.service.ReviewService; 
+import poly.edu.service.AuthService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,17 +71,28 @@ public class HomeController {
     @Autowired
     private CartRepository cartRepository;
     
+    @Autowired
+    private AuthService authService; // 1. Inject AuthService vào đây
+
+
     /**
-     * Helper method để thêm cart count cho navbar
+     * Helper method để thêm cart count và account cho navbar
      */
     private void addCartCount(Model model, HttpSession session) {
-        Account account = (Account) session.getAttribute("account");
+        // CŨ (Xóa hoặc comment dòng này): 
+        // Account account = (Account) session.getAttribute("account"); 
+
+        // MỚI (Dùng AuthService để lấy user chuẩn từ Spring Security):
+        Account account = authService.getAccount(); 
+
         if (account != null) {
+            // Logic giữ nguyên
             int cartCount = cartRepository.findByAccountId(account.getAccountId()).size();
             model.addAttribute("cartCount", cartCount);
-            model.addAttribute("account", account);
+            model.addAttribute("account", account); // Đưa account vào Model để View dùng
         } else {
             model.addAttribute("cartCount", 0);
+            model.addAttribute("account", null);
         }
     }
     
@@ -176,7 +188,9 @@ public class HomeController {
                                RedirectAttributes redirectAttributes,
                                HttpSession session) {
         
-        Account account = (Account) session.getAttribute("account");
+        // SỬA DÒNG NÀY: Lấy account từ AuthService thay vì Session
+        Account account = authService.getAccount();
+        
         if (account == null) {
             redirectAttributes.addFlashAttribute("message", "❌ Vui lòng đăng nhập để đánh giá!");
             return "redirect:/account/login";
