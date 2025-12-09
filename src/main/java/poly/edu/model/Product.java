@@ -2,6 +2,7 @@ package poly.edu.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // Nhớ import dòng này
 
 @Data
 @NoArgsConstructor
@@ -43,11 +44,9 @@ public class Product {
     @Column(name = "PromotionId")
     private Integer promotionId;
     
-    // Relationship with Category
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CategoryId", insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "CategoryId", insertable = false, updatable = false) // <--- THÊM insertable và updatable = false
+    @JsonIgnoreProperties("products")
     private Category category;
     
     // Relationship with Promotion

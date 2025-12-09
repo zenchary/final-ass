@@ -14,10 +14,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     List<Product> findByNameContainingIgnoreCase(String keyword);
     
     // Find by category with pagination
-    Page<Product> findByCategoryId(Integer categoryId, Pageable pageable);
+    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
     
     // Find by category
-    List<Product> findByCategoryId(Integer categoryId);
+    List<Product> findByCategoryId(Long categoryId);
     
     // Find available products (quantity > 0)
     Page<Product> findByQuantityGreaterThan(Integer quantity, Pageable pageable);
